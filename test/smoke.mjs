@@ -33,6 +33,7 @@ function handle({ method, params }) {
     }
     case "eth_getLogs": {
       const from = parseInt(params[0].fromBlock, 16);
+      if (parseInt(params[0].toBlock, 16) - from + 1 > 1000) throw new Error("block range greater than 1000 max"); // same limit as the real Ink RPC
       return [0, 1].map((i) => ({ address: params[0].address, blockHash: "0x" + "cd".repeat(32), blockNumber: "0x" + (from + 5 + i).toString(16), data: "0x", logIndex: "0x" + i.toString(16), removed: false, topics: ["0x" + "11".repeat(32)], transactionHash: "0x" + (from + i).toString(16).padStart(64, "0"), transactionIndex: "0x0" }));
     }
   }
@@ -54,7 +55,7 @@ const calls = [
   ["splicex_overview", {}], ["ink_status", {}], ["token_info", { token: T }], ["wallet_balance", { wallet: W }],
   ["wallet_balance", { wallet: W, token: T }], ["catx_fee_perk", { wallet: W, catx: T }],
   ["catx_fee_perk", { wallet: "0xc0de000000000000000000000000000000000000", catx: T }], ["catx_fee_perk", { wallet: W }],  // uses the built-in CATX address
-  ["router_activity", { blocks: 4500 }], ["governance_check", {}], ];
+  ["router_activity", { blocks: 4500 }], ["router_activity", {}], ["governance_check", {}], ];
 const expectErr = [["token_info", { token: "not-an-address" }]];
 let failures = 0;
 for (const [name, args] of calls) {

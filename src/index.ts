@@ -28,8 +28,8 @@ const RPC_URL = process.env.INK_RPC_URL ?? "https://rpc-gel.inkonchain.com";
 const EXPLORER = process.env.INK_EXPLORER_URL ?? "https://explorer.inkonchain.com";
 const CATX_ADDRESS = process.env.CATX_ADDRESS ?? "0x06A0Ff27F4f2363259FC4c96DdE427E06048EdD3"; // CATX on Ink (script/InkAddresses.sol)
 const CATX_PERK_THRESHOLD = 1_000_000n;
-const MAX_LOG_RANGE = 2_000n; // blocks per eth_getLogs request
-const MAX_BLOCKS = 20_000n;
+const MAX_LOG_RANGE = 1_000n; // Ink RPC rejects eth_getLogs ranges over 1,000 blocks
+const MAX_BLOCKS = 100_000n; // about 28 hours at one block per second
 
 const ink = defineChain({
   id: 57073,
@@ -251,7 +251,7 @@ server.registerTool(
     description:
       "Recent on-chain activity of the live SpliceX router (v1.6): how many events and transactions it produced over the last N blocks, with links to the latest transactions. Ink produces about one block per second.",
     inputSchema: {
-      blocks: z.number().int().min(10).max(Number(MAX_BLOCKS)).default(3600).describe("How many recent blocks to scan (default 3600, about an hour; max 20000)."),
+      blocks: z.number().int().min(10).max(Number(MAX_BLOCKS)).default(43_200).describe("How many recent blocks to scan (default 43200, about 12 hours; max 100000, about 28 hours)."),
     },
     annotations: { readOnlyHint: true, openWorldHint: true },
   },
@@ -268,7 +268,7 @@ server.registerTool(
       const txs = [...new Set(logs.map((l) => l.transactionHash).filter(Boolean))] as string[];
       const recent = txs.slice(-5).reverse();
       const lines = [
-        `SpliceX router v1.6 over blocks ${from}–${latest} (about ${Math.round(blocks / 60)} minutes):`,
+        `SpliceX router v1.6 over blocks ${from}–${latest} (about ${blocks >= 3600 ? `${Math.round(blocks / 360) / 10} hours` : `${Math.round(blocks / 60)} minutes`}):`,
         `${logs.length} events from ${txs.length} transactions.`,
       ];
       if (recent.length) lines.push("Most recent transactions:", ...recent.map((h) => `- ${txLink(h)}`));

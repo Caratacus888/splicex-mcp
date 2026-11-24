@@ -21,14 +21,14 @@ It is **read-only by design**: it holds no keys and never sends transactions.
 | `token_info` | Name, symbol, decimals and total supply of any ERC-20 on Ink |
 | `wallet_balance` | ETH balance of a wallet, or its balance of a given token |
 | `catx_fee_perk` | Whether a wallet gets fee-free splicing: holds ≥ 1,000,000 CATX **and** is a regular wallet or EIP-7702 account (contract wallets don't qualify) |
-| `router_activity` | Events and transactions from the live router (v1.6) over the last N blocks, with explorer links |
+| `router_activity` | Events and transactions from the live router (v1.6) over the last N blocks (default about 12 hours), with explorer links |
 | `governance_check` | Confirms every owned contract is owned by the 2-of-3 Safe with no pending transfer, and reads the live router's `VERSION()` |
 
 ## Design notes
 
 - **Deterministic where it matters.** Every number comes from the chain or from fixed protocol facts, never from the model's memory. Claude decides *which* tool to call; the tools decide *what is true*.
 - **Safe failure.** Bad input (an invalid address, a missing CATX address) returns a clear error message rather than crashing, so Claude can explain the problem or ask for what's missing.
-- **RPC-friendly.** Log queries are split into 2,000-block chunks, and block ranges are capped.
+- **RPC-friendly.** Log queries are split into 1,000-block chunks (the Ink RPC's limit), and the scan window is capped at about 28 hours.
 - **Tool annotations.** Every tool is marked read-only, so clients can run them without extra confirmation.
 
 ## Setup
@@ -70,6 +70,10 @@ Add this to `claude_desktop_config.json` (Settings → Developer → Edit Config
 | `INK_RPC_URL` | `https://rpc-gel.inkonchain.com` | Ink RPC endpoint |
 | `INK_EXPLORER_URL` | `https://explorer.inkonchain.com` | Explorer used for links |
 | `CATX_ADDRESS` | CATX on Ink (`0x06A0…EdD3`) | Override the CATX token address |
+
+## Verified against Ink mainnet
+
+On 24 November 2026 every on-chain read this server makes was run against the live Ink RPC: chain id 57073, all six owned contracts owned by the 2-of-3 Safe with no pending transfer, the router's `VERSION()` returning 16, CATX's symbol and decimals, and router log scans in 1,000-block chunks.
 
 ## Testing
 
