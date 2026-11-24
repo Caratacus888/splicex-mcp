@@ -31,7 +31,14 @@ It is **read-only by design**: it holds no keys and never sends transactions.
 - **RPC-friendly.** Log queries are split into 1,000-block chunks (the Ink RPC's limit), and the scan window is capped at about 28 hours.
 - **Tool annotations.** Every tool is marked read-only, so clients can run them without extra confirmation.
 
-## Setup
+## Use it hosted (no install)
+
+The same tools run as a Cloudflare Worker serving MCP over Streamable HTTP at `/mcp`. In Claude, add a custom connector with the Worker's URL, for example `https://splicex-mcp.<account>.workers.dev/mcp`.
+
+The Worker is stateless (a fresh server per request), needs no storage or secrets, and is read-only like the local version. Deploy your own with `npx wrangler deploy`, or connect this repo in the Cloudflare dashboard (Workers & Pages → Create → Import a repository) to redeploy on every push.
+
+## Run it locally
+
 
 Requires Node.js 18 or later.
 
@@ -79,11 +86,12 @@ On 24 November 2026 every on-chain read this server makes was run against the li
 
 ```bash
 npm run build
-npm test
+npm test             # local server over stdio
+npm run test:worker  # Cloudflare Worker over HTTP (runs wrangler dev)
 ```
 
-The smoke test starts a simulated Ink RPC, launches the server over stdio exactly as Claude would, lists the tools and calls each one, including an invalid input that must fail politely.
+Both tests start a simulated Ink RPC with the real RPC's 1,000-block log limit. `npm test` launches the server over stdio exactly as Claude Desktop would and calls every tool, including an invalid input that must fail politely. `npm run test:worker` runs the Worker in Cloudflare's local runtime and talks to it over Streamable HTTP, as a hosted Claude connector would.
 
 ## Stack
 
-TypeScript, the official MCP TypeScript SDK, viem for on-chain reads, and zod for input validation.
+TypeScript, the official MCP TypeScript SDK (stdio and Streamable HTTP transports), viem for on-chain reads, zod for input validation, and Cloudflare Workers for hosting.
