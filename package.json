@@ -1,0 +1,36 @@
+{
+  "name": "splicex-mcp",
+  "version": "1.0.0",
+  "description": "MCP server giving Claude read-only access to SpliceX and the Ink network",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "node test/smoke.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "claude",
+    "splicex",
+    "ink",
+    "defi"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "viem": "^2.58.6",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
+  },
+  "type": "module",
+  "bin": {
+    "splicex-mcp": "dist/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
