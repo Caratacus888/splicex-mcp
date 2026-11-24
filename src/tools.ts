@@ -245,7 +245,9 @@ export function createServer(cfg: Config = {}) {
         const verdict =
           enough && eligibleKind
             ? "Qualifies: splices sent from this wallet pay no SpliceX fee."
-            : !enough
+            : !enough && !eligibleKind
+              ? `Doesn't qualify: it needs ${fmt(threshold - bal, m.decimals)} more ${m.symbol}, and contract wallets don't get the perk anyway (the owner can exempt one with addFeeExempt, behind the 48-hour timelock).`
+              : !enough
               ? `Doesn't qualify yet: needs ${fmt(threshold - bal, m.decimals)} more ${m.symbol}.`
               : "Holds enough CATX, but contract wallets don't get the perk (their transactions are sent by someone else). The owner can exempt one with addFeeExempt, behind the 48-hour timelock.";
         return text(`${addr(w)} is ${kind} holding ${fmt(bal, m.decimals)} ${m.symbol} (threshold: 1,000,000).\n${verdict}`);

@@ -33,7 +33,9 @@ It is **read-only by design**: it holds no keys and never sends transactions.
 
 ## Use it hosted (no install)
 
-The same tools run as a Cloudflare Worker serving MCP over Streamable HTTP at `/mcp`. In Claude, add a custom connector with the Worker's URL, for example `https://splicex-mcp.<account>.workers.dev/mcp`.
+Live at **https://splicex-mcp.splicex4444.workers.dev/mcp**. In Claude, add a custom connector with that URL and the tools are available straight away.
+
+The hosted version is a Cloudflare Worker serving MCP over Streamable HTTP at `/mcp`, deployed automatically from this repo on every push.
 
 The Worker is stateless (a fresh server per request), needs no storage or secrets, and is read-only like the local version. Deploy your own with `npx wrangler deploy`, or connect this repo in the Cloudflare dashboard (Workers & Pages → Create → Import a repository) to redeploy on every push.
 
